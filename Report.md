@@ -43,11 +43,12 @@ flowchart LR
 
 ### Satellite Image Classification
 1. Load images from each directory, and save the image data and its label (the directory's name) in two lists.
-2. Reshape each image data into a one-dimensional array.
-3. Split the lists into a training set and a testing set.
-4. Create models with different parameters and apply 5-fold cross validation with the training set.
-5. Choose the best model and apply validation with the testing set.
-6. Try different models and follow step 4 and 5.
+2. Scale each image into a $64 \times 64$ square.
+3. Reshape each image data into a one-dimensional array.
+4. Split the lists into a training set and a testing set.
+5. Create models with different parameters and apply 5-fold cross validation with the training set.
+6. Choose the best model and apply validation with the testing set.
+7. Try different models and follow step 4 and 5.
 
 ### Stellar Classification
 1. Load the CSV file into a data frame of Pandas.
@@ -70,221 +71,274 @@ flowchart LR
 In all the train-test-spliting steps above, I tried 2 different testing set ratio, which are $0.2$ and $0.3$.
 
 ## III. Algorithms
-### K-Nearest Neighbors
+### 1. K-Nearest Neighbors
 I tried KNN model with 3 different $k$, which is the number of neighbors to use.
 - `n_neighbors`: $5$, $10$, $15$
 
-### Random Forest
+### 2. Random Forest
 I tried random forest model with 3 different minimum number of samples to be a leaf node.
 - `min_samples_leaf`: $1$, $5$, $10$
 
 The number of decision trees I used is 100, which is chosen by default.
 
-### Support Vector Machine
+### 3. Support Vector Machine
 I tried SVM model with 3 different $C$, which is a regularization parameter. The strength of the regularization is inversely proportional to it.
 - `C`: $1$, $5$, $10$
 
 The kernel I used is radial basis function, which is chosen by default.
 
-### Multilayer Perceptron
+### 4. Multilayer Perceptron
 I tried MLP model with 3 different sizes of the hidden layer.
 - `hidden_layer_size`: $256$, $512$, $1024$
 
 The model has only one hidden layer.
 
 ## IV. Analysis
-### Satellite Image Classification
-#### KNN
-##### Testing Performance with Test Size: 0.2
+### 1. Satellite Image Classification
+#### Testing Performance of KNN
+##### With Test Size: 0.2
 | n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 5 | 0.90 | 0.88 | 0.88 | 0.87 |
 | 10 | 0.90 | 0.89 | 0.89 | 0.88 |
 | 15 | 0.90 | 0.88 | 0.88 | 0.88 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 5 | 0.90 | 0.87 | 0.87 | 0.87 |
 | 10 | 0.90 | 0.88 | 0.89 | 0.88 |
 | 15 | 0.90 | 0.88 | 0.88 | 0.88 |
 
-#### Random Forest
-##### Testing Performance with Test Size: 0.2
+##### Other Observation
+It had poor recall ($\sim 70\% - 75\%$) on class 2 (green area), and poor precision ($\sim 65\% - 70\%$) on class 3 (water area).
+
+#### Testing Performance of Random Forest
+##### With Test Size: 0.2
 | min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 1 | 0.94 | 0.94 | 0.94 | 0.94 |
 | 5 | 0.94 | 0.93 | 0.93 | 0.93 |
 | 10 | 0.93 | 0.93 | 0.93 | 0.92 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 1 | 0.94 | 0.93 | 0.94 | 0.93 |
 | 5 | 0.93 | 0.93 | 0.93 | 0.93 |
 | 10 | 0.93 | 0.93 | 0.93 | 0.92 |
 
-#### SVM
-##### Testing Performance with Test Size: 0.2
+##### Other Observation
+On each class it had high recall and precision, which ranged around $90\%$ to $95\%$.
+
+#### Testing Performance of SVM
+##### With Test Size: 0.2
 | C | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 1 | 0.91 | 0.91 | 0.91 | 0.90 |
 | 5 | 0.92 | 0.92 | 0.92 | 0.91 |
 | 10 | 0.92 | 0.92 | 0.92 | 0.92 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | C | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 1 | 0.91 | 0.90 | 0.90 | 0.90 |
 | 5 | 0.92 | 0.92 | 0.92 | 0.92 |
 | 10 | 0.92 | 0.92 | 0.92 | 0.91 |
 
-#### MLP
-##### Testing Performance with Test Size: 0.2
+##### Other Observation
+It had poor precision on class 2 (green area), and poor recall on class 3 (water area). Both were ranged around $80\%$ to $85\%$.
+
+#### Testing Performance of MLP
+##### With Test Size: 0.2
 | hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 256 | 0.87 | 0.87 | 0.86 | 0.86 |
 | 512 | 0.84 | 0.82 | 0.82 | 0.82 |
 | 1024 | 0.86 | 0.86 | 0.86 | 0.86 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 256 | 0.87 | 0.88 | 0.87 | 0.87 |
 | 512 | 0.87 | 0.87 | 0.86 | 0.86 |
 | 1024 | 0.86 | 0.86 | 0.86 | 0.85 |
 
-### Stellar Classification
-#### KNN
-##### Testing Performance with Test Size: 0.2
+##### Other Observation
+It had varied precision ($\sim 75\% - 85\%$) on class 2 (green area), and vaired recall ($\sim 65\% - 85\%$) on class 3 (water area).
+
+#### i. Test Size Comparison
+There's no big difference between the performance of these 2 setups. From my perspective, it's because $0.2$ is close to $0.3$. I should have tried 2 setups with a larger gap.
+
+#### ii. Classifier Comparison
+According to the result, on average, random forest > SVM > KNN > MLP. To my surprise, MLP performed the worst, even KNN performed a little better than it. I guessed it's due to the number of hidden layers. If it was increased, perhaps MLP would perform the best.
+
+Although, in terms of accuracy, KNN performed better than MLP, it's the other way around, in terms of recall and precision on class 2 and 3.
+
+#### iii. Hyper-parameter Comparison
+##### KNN
+According to the accuracy and F1-score of KNN, it performed the best when $K = 10$. An optimal $K$ could be found near it.
+
+##### Random Forest
+As the minimum required number of data to form a leaf node increased, the accuracy of random forest decreased. Therefore, in this classification task, it should not be set too high.
+
+##### SVM
+It's observed that the larger $C$ was, the better performance SVM had. Thus, further experiments can be conducted to find the optimal $C$.
+
+##### MLP
+When test size is 0.2, it had the worst performance when `hidden_layer_size` is 512. In contrast, when test size is 0.3, the accuracy decreased as the `hidden_layer_size` increased.
+
+It's interesting that though the accuracy decreased as the `hidden_layer_size` increased, the precision on class 2 and recall on class 3 increased.
+
+Thus, a high performance and stable MLP model can be constructed with `hidden_layer_size` at least 1024 and perhaps more than one hidden layer.
+
+### 2. Stellar Classification
+#### Testing Performance of KNN
+##### With Test Size: 0.2
 | n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
-| 5 |  |  |  |  |
-| 10 |  |  |  |  |
-| 15 |  |  |  |  |
+| 5 | 0.70 | 0.73 | 0.71 | 0.74 |
+| 10 | 0.70 | 0.73 | 0.71 | 0.74 |
+| 15 | 0.69 | 0.72 | 0.70 | 0.73 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
-| 5 |  |  |  |  |
-| 10 |  |  |  |  |
-| 15 |  |  |  |  |
+| 5 | 0.69 | 0.72 | 0.70 | 0.73 |
+| 10 | 0.68 | 0.72 | 0.70 | 0.73 |
+| 15 | 0.68 | 0.72 | 0.70 | 0.72 |
 
-#### Random Forest
-##### Testing Performance with Test Size: 0.2
+#### Testing Performance of Random Forest
+##### With Test Size: 0.2
 | min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
-| 1 |  |  |  |  |
-| 5 |  |  |  |  |
-| 10 |  |  |  |  |
+| 1 | 0.87 | 0.90 | 0.88 | 0.89 |
+| 5 | 0.87 | 0.89 | 0.88 | 0.88 |
+| 10 | 0.86 | 0.88 | 0.87 | 0.88 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
-| 1 |  |  |  |  |
-| 5 |  |  |  |  |
-| 10 |  |  |  |  |
+| 1 | 0.86 | 0.89 | 0.87 | 0.88 |
+| 5 | 0.86 | 0.88 | 0.87 | 0.87 |
+| 10 | 0.85 | 0.88 | 0.86 | 0.87 |
 
-#### SVM
-##### Testing Performance with Test Size: 0.2
+#### Testing Performance of SVM
+##### With Test Size: 0.2
 | C | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
-| 1 |  |  |  |  |
-| 5 |  |  |  |  |
-| 10 |  |  |  |  |
+| 1 | 0.85 | 0.88 | 0.86 | 0.86 |
+| 5 | 0.88 | 0.91 | 0.89 | 0.90 |
+| 10 | 0.89 | 0.92 | 0.90 | 0.91 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | C | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
-| 1 |  |  |  |  |
-| 5 |  |  |  |  |
-| 10 |  |  |  |  |
+| 1 | 0.83 | 0.87 | 0.84 | 0.85 |
+| 5 | 0.86 | 0.90 | 0.88 | 0.88 |
+| 10 | 0.88 | 0.91 | 0.89 | 0.90 |
 
-#### MLP
-##### Testing Performance with Test Size: 0.2
+#### Testing Performance of MLP
+##### With Test Size: 0.2
 | hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
-| 256 |  |  |  |  |
-| 512 |  |  |  |  |
-| 1024 |  |  |  |  |
+| 256 | 0.93 | 0.93 | 0.93 | 0.94 |
+| 512 | 0.87 | 0.92 | 0.89 | 0.89 |
+| 1024 | 0.92 | 0.94 | 0.93 | 0.93 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
-| 256 |  |  |  |  |
-| 512 |  |  |  |  |
-| 1024 |  |  |  |  |
+| 256 | 0.89 | 0.93 | 0.91 | 0.92 |
+| 512 | 0.90 | 0.93 | 0.91 | 0.92 |
+| 1024 | 0.92 | 0.93 | 0.92 | 0.93 |
+
+#### i. Test Size Comparison
+
+#### ii. Classifier Comparison
+
+#### iii. Hyper-parameter Comparison
+
 - After categorical features were encoded with one-hot encoding, there becomes a large number of features; therefore, it's necessary to apply PCA transformation, or the training process takes too long.
 - There are so many (100,000) data, I have to remove some outliers to speed up the training.
 -
 
-### BBC News Classification
-#### KNN
-##### Testing Performance with Test Size: 0.2
+### 3. BBC News Classification
+#### Testing Performance of KNN
+##### With Test Size: 0.2
 | n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 5 | 0.82 | 0.83 | 0.83 | 0.82 |
 | 10 | 0.77 | 0.76 | 0.76 | 0.75 |
 | 15 | 0.85 | 0.83 | 0.83 | 0.82 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 5 | 0.85 | 0.85 | 0.85 | 0.85 |
 | 10 | 0.88 | 0.89 | 0.88 | 0.88 |
 | 15 | 0.86 | 0.87 | 0.86 | 0.87 |
 
-#### Random Forest
-##### Testing Performance with Test Size: 0.2
+#### Testing Performance of Random Forest
+##### With Test Size: 0.2
 | min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 1 | 0.88 | 0.88 | 0.87 | 0.88 |
 | 5 | 0.78 | 0.78 | 0.76 | 0.78 |
 | 10 | 0.82 | 0.75 | 0.74 | 0.75 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 1 | 0.82 | 0.82 | 0.78 | 0.77 |
 | 5 | 0.75 | 0.78 | 0.73 | 0.73 |
 | 10 | 0.36 | 0.59 | 0.44 | 0.48 |
 
-#### SVM
-##### Testing Performance with Test Size: 0.2
+#### Testing Performance of SVM
+##### With Test Size: 0.2
 | C | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 1 | 0.81 | 0.77 | 0.75 | 0.78 |
 | 5 | 0.91 | 0.90 | 0.90 | 0.90 |
 | 10 | 0.91 | 0.90 | 0.90 | 0.90 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | C | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 1 | 0.73 | 0.75 | 0.68 | 0.68 |
 | 5 | 0.82 | 0.85 | 0.82 | 0.82 |
 | 10 | 0.82 | 0.85 | 0.82 | 0.82 |
 
-#### MLP
-##### Testing Performance with Test Size: 0.2
+#### Testing Performance of MLP
+##### With Test Size: 0.2
 | hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 256 | 0.90 | 0.90 | 0.90 | 0.90 |
 | 512 | 0.83 | 0.83 | 0.82 | 0.82 |
 | 1024 | 0.83 | 0.83 | 0.82 | 0.82 |
 
-##### Testing Performance with Test Size: 0.3
+##### With Test Size: 0.3
 | hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
 | --- | --- | --- | --- | --- |
 | 256 | 0.84 | 0.87 | 0.85 | 0.85 |
 | 512 | 0.86 | 0.89 | 0.87 | 0.87 |
 | 1024 | 0.86 | 0.89 | 0.87 | 0.87 |
 
+#### i. Test Size Comparison
+
+#### ii. Classifier Comparison
+
+#### iii. Hyper-parameter Comparison
+
+
 ## V. Discussion
 ### Are the Results What I Expected?
+- I guessed the setup with the larger testing set would perform worse; however, there's no big difference.
 
 ### Factors Affecting the Performance
 
 ### Further Experiments if Time Available
+- I will try larger testing sets.
 
 ### What I have learned from the Project
 - Skill of dynamic web scraping
