@@ -171,26 +171,24 @@ It had varied precision ($\sim 75\% - 85\%$) on class 2 (green area), and vaired
 There's no big difference between the performance of these 2 setups. From my perspective, it's because $0.2$ is close to $0.3$. I should have tried 2 setups with a larger gap.
 
 #### ii. Classifier Comparison
-According to the result, on average, random forest > SVM > KNN > MLP. To my surprise, MLP performed the worst, even KNN performed a little better than it. I guessed it's due to the number of hidden layers. If it was increased, perhaps MLP would perform the best.
+According to the result, on average, RF > SVM > KNN > MLP. To my surprise, MLP performed the worst, even KNN performed a little better than it. I guessed it's due to the number of hidden layers. If it was increased, perhaps MLP would perform the best.
 
 Although, in terms of accuracy, KNN performed better than MLP, it's the other way around, in terms of recall and precision on class 2 and 3.
 
 #### iii. Hyper-parameter Comparison
-##### KNN
-According to the accuracy and F1-score of KNN, it performed the best when $K = 10$. An optimal $K$ could be found near it.
+For KNN, according to the accuracy and F1-score of it, it performed the best when $K = 10$. An optimal $K$ could be found near it.
 
-##### Random Forest
-As the minimum required number of data to form a leaf node increased, the accuracy of random forest decreased. Therefore, in this classification task, it should not be set too high.
+For random forest, as the minimum required number of data to form a leaf node increased, the accuracy of random forest decreased. Therefore, in this classification task, it should not be set too high.
 
-##### SVM
-It's observed that the larger $C$ was, the better performance SVM had. Thus, further experiments can be conducted to find the optimal $C$.
+For SVM, it's observed that the larger $C$ was, the better performance SVM had. Thus, further experiments can be conducted to find the optimal $C$.
 
-##### MLP
-When test size is 0.2, it had the worst performance when `hidden_layer_size` is 512. In contrast, when test size is 0.3, the accuracy decreased as the `hidden_layer_size` increased.
+For MLP, when test size is 0.2, it had the worst performance when `hidden_layer_size` is 512. In contrast, when test size is 0.3, the accuracy decreased as the `hidden_layer_size` increased.
 
 It's interesting that though the accuracy decreased as the `hidden_layer_size` increased, the precision on class 2 and recall on class 3 increased.
 
 Thus, a high performance and stable MLP model can be constructed with `hidden_layer_size` at least 1024 and perhaps more than one hidden layer.
+
+---
 
 ### 2. Stellar Classification
 #### Testing Performance of KNN
@@ -208,6 +206,9 @@ Thus, a high performance and stable MLP model can be constructed with `hidden_la
 | 10 | 0.68 | 0.72 | 0.70 | 0.73 |
 | 15 | 0.68 | 0.72 | 0.70 | 0.72 |
 
+##### Other Observation
+Although I have done undersampling on the major classes to make each class has equal size, the precision and recall on each class is still related to the original class number. The more the number of that class originally had, the better the precision and recall it had.
+
 #### Testing Performance of Random Forest
 ##### With Test Size: 0.2
 | min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
@@ -222,6 +223,9 @@ Thus, a high performance and stable MLP model can be constructed with `hidden_la
 | 1 | 0.86 | 0.89 | 0.87 | 0.88 |
 | 5 | 0.86 | 0.88 | 0.87 | 0.87 |
 | 10 | 0.85 | 0.88 | 0.86 | 0.87 |
+
+##### Other Observation
+It had poor precision ($\sim 72\% - 76\%$) on class 2 (quasar), no matter the value of `min_samples_leaf` was.
 
 #### Testing Performance of SVM
 ##### With Test Size: 0.2
@@ -238,6 +242,9 @@ Thus, a high performance and stable MLP model can be constructed with `hidden_la
 | 5 | 0.86 | 0.90 | 0.88 | 0.88 |
 | 10 | 0.88 | 0.91 | 0.89 | 0.90 |
 
+##### Other Observation
+It had poor precision on class 2 (quasar), and it was related to the value of $C$. As it got larger, the precision got larger, too. It ranged from $67\%$ to $80\%$.
+
 #### Testing Performance of MLP
 ##### With Test Size: 0.2
 | hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
@@ -253,15 +260,28 @@ Thus, a high performance and stable MLP model can be constructed with `hidden_la
 | 512 | 0.90 | 0.93 | 0.91 | 0.92 |
 | 1024 | 0.92 | 0.93 | 0.92 | 0.93 |
 
+##### Other Observation
+It had high recall and precision on each class compared with other models, each was about $85\%$ to $95\%$.
+
 #### i. Test Size Comparison
+On this dataset, it's obvious that each model had worse performance on testing set with test size equal to 0.3 than the one with test size equal to 0.2. It's because a larger testing set means a smaller training set, and the models were not trained with enough information.
 
 #### ii. Classifier Comparison
+On this dataset, comparing the best model of each type, MLP > SVM > RF > KNN. 
 
 #### iii. Hyper-parameter Comparison
+For KNN, as the $K$ increased, the performance decreased. However, the effect was not obvious.
 
-- After categorical features were encoded with one-hot encoding, there becomes a large number of features; therefore, it's necessary to apply PCA transformation, or the training process takes too long.
-- There are so many (100,000) data, I have to remove some outliers to speed up the training.
--
+For random forest, similar to KNN, as `min_samples_leaf` increased, the performance slightly decreased.
+
+For SVM, as the $C$ increased, the performance increased. Therefore, we can know that the gap between each class in testing data is also small, and other unseen data in the training process also lay at the same side as the outlier.
+
+For MLP, it's hard to tell the relationship between `hidden_layer_size` and the performance, since when the test size was 0.2, it dropped and bounced back, but when the test size was 0.3, it increased with the `hidden_layer_size`.
+
+#### iv. PCA Comparison
+After categorical features were encoded with one-hot encoding, there became a large number of features. Before applying PCA transformation, it took too long to train and eventually run out of memory. Therefore, it's necessary to apply PCA transformation.
+
+---
 
 ### 3. BBC News Classification
 #### Testing Performance of KNN
@@ -325,26 +345,40 @@ Thus, a high performance and stable MLP model can be constructed with `hidden_la
 | 1024 | 0.86 | 0.89 | 0.87 | 0.87 |
 
 #### i. Test Size Comparison
+KNN and MLP have higher accuracy on larger testing set, while random forest and SVM have lower accuracy on larger testing set. This means the former models need less information when training, whereas the latter models need more.
 
 #### ii. Classifier Comparison
+The performance of each model: MLP ~ SVM > KNN ~ RF.
 
 #### iii. Hyper-parameter Comparison
+For KNN, the relation between $K$ and performance was not consistent with different test size. In my opinion, it's due to the number of the whole dataset is small. Therefore, these 2 datasets have different groups of data when randomly sampled. Consequently, the optimal $K$ for good performance was different.
 
+For random forest, in this case, it's obvious that the larger `min_samples_leaf` was, the worse the performance was. This is also due to small dataset. Thus, if the minimum required number to be a leaf node is large, each decision tree was not fully expanded, which caused low performance.
+
+For SVM, on this dataset, its performance was also positively related to the value of $C$.
+
+For MLP, with a larger training set (smaller testing set), its accuracy dropped when `hidden_layer_size` grew, while with a smaller training set (larger testing set), it got higher when the value grew.
 
 ## V. Discussion
-### Are the Results What I Expected?
-- I guessed the setup with the larger testing set would perform worse; however, there's no big difference.
+##### Are the Results What I Expected?
+- I guessed the setup with the larger testing set would perform worse; however, it depended.
+- Initially, I guessed MLP would perform better on image data; however, in my experiments, it did better job on other type of data.
+- I didn't expect KNN to have high accuracy, but the outcome showed that It could have accuracy up to $70\%$ and even higher.
 
-### Factors Affecting the Performance
+##### Factors Affecting the Performance
+- How well the data are processed
+- Training set vs. testing set ratio
+- Model selection
+- Hyper-parameter of each model
 
-### Further Experiments if Time Available
-- I will try larger testing sets.
+##### Further Experiments if Time Available
+- I will try larger testing sets, and try more parameter combinations.
+- Also, I may try other type of data, such as audio or video.
 
-### What I have learned from the Project
+##### What I have learned from the Project
 - Skill of dynamic web scraping
 - Preprocessing of image data
 - Preprocessing of text data
 - Undersampling for imbalanced data
 
 ## VI. Appendix
-
