@@ -410,6 +410,8 @@ It had poor precision ($\sim 72\% - 76\%$) on class 2 (quasar), no matter the va
 ##### Other Observation
 It had poor precision on class 2 (quasar), and it was related to the value of $C$. As it got larger, the precision got larger, too. It ranged from $67\%$ to $80\%$.
 
+<div style="margin-top: 11rem;"></div>
+
 #### Testing Performance of MLP
 ##### With Test Size: 0.2
 <div class="row">
@@ -471,6 +473,8 @@ For MLP, it's hard to tell the relationship between `hidden_layer_size` and the 
 After categorical features were encoded with one-hot encoding, there became a large number of features. Before applying PCA transformation, it took too long to train and eventually run out of memory. Therefore, it's necessary to apply PCA transformation.
 
 ---
+
+<div style="margin-top: 3rem;"></div>
 
 ### 3. BBC News Classification
 <div class="label-name">
