@@ -94,75 +94,165 @@ I tried MLP model with 3 different sizes of the hidden layer.
 The model has only one hidden layer.
 
 ## IV. Analysis
+> Note: "pre.", "rec.", and "acc." are abbreviations of "precision", "recall", and "accuracy", and "F1" means "F1-score".
+
 ### 1. Satellite Image Classification
 #### Testing Performance of KNN
 ##### With Test Size: 0.2
-| n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| n_neighbors | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 5 | 0.90 | 0.88 | 0.88 | 0.87 |
 | 10 | 0.90 | 0.89 | 0.89 | 0.88 |
 | 15 | 0.90 | 0.88 | 0.88 | 0.88 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.95 | 0.96 | 0.96 |
+| 1 | 0.99 | 0.94 | 0.96 |
+| 2 | 0.94 | 0.69 | 0.79 |
+| 3 | 0.73 | 0.95 | 0.83 |
+
+</div>
+
 ##### With Test Size: 0.3
-| n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| n_neighbors | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 5 | 0.90 | 0.87 | 0.87 | 0.87 |
 | 10 | 0.90 | 0.88 | 0.89 | 0.88 |
 | 15 | 0.90 | 0.88 | 0.88 | 0.88 |
+
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.94 | 0.96 | 0.95 |
+| 1 | 0.99 | 0.93 | 0.96 |
+| 2 | 0.93 | 0.68 | 0.78 |
+| 3 | 0.74 | 0.94 | 0.83 |
+
+</div>
 
 ##### Other Observation
 It had poor recall ($\sim 70\% - 75\%$) on class 2 (green area), and poor precision ($\sim 65\% - 70\%$) on class 3 (water area).
 
 #### Testing Performance of Random Forest
 ##### With Test Size: 0.2
-| min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| min_samples_leaf | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.94 | 0.94 | 0.94 | 0.94 |
 | 5 | 0.94 | 0.93 | 0.93 | 0.93 |
 | 10 | 0.93 | 0.93 | 0.93 | 0.92 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.96 | 0.95 | 0.96 |
+| 1 | 0.97 | 0.97 | 0.97 |
+| 2 | 0.89 | 0.94 | 0.91 |
+| 3 | 0.92 | 0.88 | 0.90 |
+
+</div>
+
 ##### With Test Size: 0.3
-| min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| min_samples_leaf | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.94 | 0.93 | 0.94 | 0.93 |
 | 5 | 0.93 | 0.93 | 0.93 | 0.93 |
 | 10 | 0.93 | 0.93 | 0.93 | 0.92 |
+
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.94 | 0.94 | 0.94 |
+| 1 | 0.96 | 0.94 | 0.95 |
+| 2 | 0.91 | 0.94 | 0.92 |
+| 3 | 0.92 | 0.91 | 0.91 |
+
+</div>
 
 ##### Other Observation
 On each class it had high recall and precision, which ranged around $90\%$ to $95\%$.
 
 #### Testing Performance of SVM
 ##### With Test Size: 0.2
-| C | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| C | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.91 | 0.91 | 0.91 | 0.90 |
 | 5 | 0.92 | 0.92 | 0.92 | 0.91 |
 | 10 | 0.92 | 0.92 | 0.92 | 0.92 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.96 | 0.94 | 0.95 |
+| 1 | 0.95 | 0.96 | 0.96 |
+| 2 | 0.84 | 0.94 | 0.89 |
+| 3 | 0.92 | 0.81 | 0.86 |
+
+</div>
+
 ##### With Test Size: 0.3
-| C | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| C | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.91 | 0.90 | 0.90 | 0.90 |
 | 5 | 0.92 | 0.92 | 0.92 | 0.92 |
 | 10 | 0.92 | 0.92 | 0.92 | 0.91 |
+
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.95 | 0.93 | 0.94 |
+| 1 | 0.94 | 0.96 | 0.95 |
+| 2 | 0.84 | 0.95 | 0.89 |
+| 3 | 0.93 | 0.82 | 0.87 |
+
+</div>
 
 ##### Other Observation
 It had poor precision on class 2 (green area), and poor recall on class 3 (water area). Both were ranged around $80\%$ to $85\%$.
 
 #### Testing Performance of MLP
 ##### With Test Size: 0.2
-| hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| hidden_layer_size | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 256 | 0.87 | 0.87 | 0.86 | 0.86 |
 | 512 | 0.84 | 0.82 | 0.82 | 0.82 |
 | 1024 | 0.86 | 0.86 | 0.86 | 0.86 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.92 | 0.87 | 0.89 |
+| 1 | 0.88 | 0.90 | 0.89 |
+| 2 | 0.77 | 0.95 | 0.85 |
+| 3 | 0.87 | 0.69 | 0.77 |
+
+</div>
+
 ##### With Test Size: 0.3
-| hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| hidden_layer_size | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 256 | 0.87 | 0.88 | 0.87 | 0.87 |
 | 512 | 0.87 | 0.87 | 0.86 | 0.86 |
 | 1024 | 0.86 | 0.86 | 0.86 | 0.85 |
+
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.92 | 0.89 | 0.90 |
+| 1 | 0.88 | 0.93 | 0.91 |
+| 2 | 0.80 | 0.88 | 0.84 |
+| 3 | 0.86 | 0.76 | 0.80 |
+
+</div>
 
 ##### Other Observation
 It had varied precision ($\sim 75\% - 85\%$) on class 2 (green area), and vaired recall ($\sim 65\% - 85\%$) on class 3 (water area).
@@ -193,72 +283,152 @@ Thus, a high performance and stable MLP model can be constructed with `hidden_la
 ### 2. Stellar Classification
 #### Testing Performance of KNN
 ##### With Test Size: 0.2
-| n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| n_neighbors | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 5 | 0.70 | 0.73 | 0.71 | 0.74 |
 | 10 | 0.70 | 0.73 | 0.71 | 0.74 |
 | 15 | 0.69 | 0.72 | 0.70 | 0.73 |
 
+| class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.84 | 0.76 | 0.80 |
+| 1 | 0.67 | 0.76 | 0.71 |
+| 2 | 0.58 | 0.67 | 0.61 |
+
+</div>
+
 ##### With Test Size: 0.3
-| n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| n_neighbors | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 5 | 0.69 | 0.72 | 0.70 | 0.73 |
 | 10 | 0.68 | 0.72 | 0.70 | 0.73 |
 | 15 | 0.68 | 0.72 | 0.70 | 0.72 |
+
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.84 | 0.74 | 0.78 |
+| 1 | 0.66 | 0.75 | 0.70 |
+| 2 | 0.56 | 0.67 | 0.61 |
+
+</div>
 
 ##### Other Observation
 Although I have done undersampling on the major classes to make each class has equal size, the precision and recall on each class is still related to the original class number. The more the number of that class originally had, the better the precision and recall it had.
 
 #### Testing Performance of Random Forest
 ##### With Test Size: 0.2
-| min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| min_samples_leaf | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.87 | 0.90 | 0.88 | 0.89 |
 | 5 | 0.87 | 0.89 | 0.88 | 0.88 |
 | 10 | 0.86 | 0.88 | 0.87 | 0.88 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.94 | 0.87 | 0.90 |
+| 1 | 0.91 | 0.91 | 0.91 |
+| 2 | 0.75 | 0.90 | 0.82 |
+
+</div>
+
 ##### With Test Size: 0.3
-| min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| min_samples_leaf | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.86 | 0.89 | 0.87 | 0.88 |
 | 5 | 0.86 | 0.88 | 0.87 | 0.87 |
 | 10 | 0.85 | 0.88 | 0.86 | 0.87 |
+
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.93 | 0.86 | 0.89 |
+| 1 | 0.91 | 0.89 | 0.90 |
+| 2 | 0.73 | 0.90 | 0.81 |
+
+</div>
 
 ##### Other Observation
 It had poor precision ($\sim 72\% - 76\%$) on class 2 (quasar), no matter the value of `min_samples_leaf` was.
 
 #### Testing Performance of SVM
 ##### With Test Size: 0.2
-| C | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| C | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.85 | 0.88 | 0.86 | 0.86 |
 | 5 | 0.88 | 0.91 | 0.89 | 0.90 |
 | 10 | 0.89 | 0.92 | 0.90 | 0.91 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.95 | 0.86 | 0.90 |
+| 1 | 0.91 | 0.88 | 0.89 |
+| 2 | 0.75 | 0.98 | 0.85 |
+
+</div>
+
 ##### With Test Size: 0.3
-| C | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| C | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.83 | 0.87 | 0.84 | 0.85 |
 | 5 | 0.86 | 0.90 | 0.88 | 0.88 |
 | 10 | 0.88 | 0.91 | 0.89 | 0.90 |
+
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.95 | 0.84 | 0.89 |
+| 1 | 0.90 | 0.87 | 0.88 |
+| 2 | 0.73 | 0.98 | 0.83 |
+
+</div>
 
 ##### Other Observation
 It had poor precision on class 2 (quasar), and it was related to the value of $C$. As it got larger, the precision got larger, too. It ranged from $67\%$ to $80\%$.
 
 #### Testing Performance of MLP
 ##### With Test Size: 0.2
-| hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| hidden_layer_size | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 256 | 0.93 | 0.93 | 0.93 | 0.94 |
 | 512 | 0.87 | 0.92 | 0.89 | 0.89 |
 | 1024 | 0.92 | 0.94 | 0.93 | 0.93 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.96 | 0.91 | 0.93 |
+| 1 | 0.88 | 0.89 | 0.89 |
+| 2 | 0.88 | 0.98 | 0.93 |
+
+</div>
+
 ##### With Test Size: 0.3
-| hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| hidden_layer_size | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 256 | 0.89 | 0.93 | 0.91 | 0.92 |
 | 512 | 0.90 | 0.93 | 0.91 | 0.92 |
 | 1024 | 0.92 | 0.93 | 0.92 | 0.93 |
+
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.96 | 0.91 | 0.93 |
+| 1 | 0.88 | 0.89 | 0.89 |
+| 2 | 0.87 | 0.98 | 0.92 |
+
+</div>
 
 ##### Other Observation
 It had high recall and precision on each class compared with other models, each was about $85\%$ to $95\%$.
@@ -286,63 +456,151 @@ After categorical features were encoded with one-hot encoding, there became a la
 ### 3. BBC News Classification
 #### Testing Performance of KNN
 ##### With Test Size: 0.2
-| n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| n_neighbors | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 5 | 0.82 | 0.83 | 0.83 | 0.82 |
 | 10 | 0.77 | 0.76 | 0.76 | 0.75 |
 | 15 | 0.85 | 0.83 | 0.83 | 0.82 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.64 | 0.77 | 0.70 |
+| 1 | 0.89 | 0.76 | 0.82 |
+| 2 | 0.87 | 1.00 | 0.93 |
+| 3 | 0.85 | 0.70 | 0.76 |
+
+</div>
+
 ##### With Test Size: 0.3
-| n_neighbors | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| n_neighbors | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 5 | 0.85 | 0.85 | 0.85 | 0.85 |
 | 10 | 0.88 | 0.89 | 0.88 | 0.88 |
 | 15 | 0.86 | 0.87 | 0.86 | 0.87 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.84 | 0.86 | 0.85 |
+| 1 | 0.98 | 1.00 | 0.99 |
+| 2 | 0.87 | 1.00 | 0.93 |
+| 3 | 0.75 | 0.62 | 0.68 |
+
+</div>
+
 #### Testing Performance of Random Forest
 ##### With Test Size: 0.2
-| min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| min_samples_leaf | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.88 | 0.88 | 0.87 | 0.88 |
 | 5 | 0.78 | 0.78 | 0.76 | 0.78 |
 | 10 | 0.82 | 0.75 | 0.74 | 0.75 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.90 | 0.50 | 0.63 |
+| 1 | 0.75 | 0.94 | 0.83 |
+| 2 | 0.97 | 1.00 | 0.98 |
+| 3 | 0.69 | 0.77 | 0.72 |
+
+</div>
+
 ##### With Test Size: 0.3
-| min_samples_leaf | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| min_samples_leaf | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.82 | 0.82 | 0.78 | 0.77 |
 | 5 | 0.75 | 0.78 | 0.73 | 0.73 |
 | 10 | 0.36 | 0.59 | 0.44 | 0.48 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.67 | 0.36 | 0.47 |
+| 1 | 0.82 | 0.81 | 0.80 |
+| 2 | 0.62 | 1.00 | 0.76 |
+| 3 | 0.48 | 0.74 | 0.58 |
+
+</div>
+
 #### Testing Performance of SVM
 ##### With Test Size: 0.2
-| C | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| C | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.81 | 0.77 | 0.75 | 0.78 |
 | 5 | 0.91 | 0.90 | 0.90 | 0.90 |
 | 10 | 0.91 | 0.90 | 0.90 | 0.90 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 1.00 | 0.60 | 0.74 |
+| 1 | 0.88 | 1.00 | 0.93 |
+| 2 | 0.87 | 1.00 | 0.93 |
+| 3 | 0.76 | 0.83 | 0.80 |
+
+</div>
+
 ##### With Test Size: 0.3
-| C | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| C | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 1 | 0.73 | 0.75 | 0.68 | 0.68 |
 | 5 | 0.82 | 0.85 | 0.82 | 0.82 |
 | 10 | 0.82 | 0.85 | 0.82 | 0.82 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 1.00 | 0.55 | 0.70 |
+| 1 | 0.89 | 0.98 | 0.93 |
+| 2 | 0.68 | 1.00 | 0.80 |
+| 3 | 0.58 | 0.74 | 0.65 |
+
+</div>
+
 #### Testing Performance of MLP
 ##### With Test Size: 0.2
-| hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| hidden_layer_size | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 256 | 0.90 | 0.90 | 0.90 | 0.90 |
 | 512 | 0.83 | 0.83 | 0.82 | 0.82 |
 | 1024 | 0.83 | 0.83 | 0.82 | 0.82 |
 
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 0.88 | 0.70 | 0.78 |
+| 1 | 0.83 | 1.00 | 0.91 |
+| 2 | 0.93 | 1.00 | 0.97 |
+| 3 | 0.77 | 0.70 | 0.73 |
+
+</div>
+
 ##### With Test Size: 0.3
-| hidden_layer_size | Average Precision | Average Recall | Average F1-score | Accuracy |
+<div class="row">
+
+| hidden_layer_size | Avg Pre. | Avg Rec. | Avg F1 | Acc. |
 | --- | --- | --- | --- | --- |
 | 256 | 0.84 | 0.87 | 0.85 | 0.85 |
 | 512 | 0.86 | 0.89 | 0.87 | 0.87 |
 | 1024 | 0.86 | 0.89 | 0.87 | 0.87 |
+
+| Class | Avg Pre. | Avg Rec. | Avg F1 |
+| --- | --- | --- | --- |
+| 0 | 1.00 | 0.73 | 0.84 |
+| 1 | 0.89 | 1.00 | 0.94 |
+| 2 | 0.80 | 1.00 | 0.89 |
+| 3 | 0.72 | 0.82 | 0.77 |
+
+</div>
 
 #### i. Test Size Comparison
 KNN and MLP have higher accuracy on larger testing set, while random forest and SVM have lower accuracy on larger testing set. This means the former models need less information when training, whereas the latter models need more.
@@ -382,3 +640,21 @@ For MLP, with a larger training set (smaller testing set), its accuracy dropped 
 - Undersampling for imbalanced data
 
 ## VI. Appendix
+
+<style>
+h1 { font-size: 22px !important; }
+h2 { font-size: 20px !important; }
+h3 { font-size: 18px !important; }
+h4 { font-size: 16px !important; }
+h5, h6 { font-size: 14px !important; }
+p, li { font-size: 14px; }
+
+.row {
+    display: flex;
+    justify-content: space-around;
+    font-size: 14px;
+}
+.row table {
+    width: auto !important;
+}
+</style>
