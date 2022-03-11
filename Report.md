@@ -8,7 +8,6 @@ Author: 0816066 官澔恩
 - III. Algorithms
 - IV. Analysis
 - V. Discussion
-- VI. Appendix
 
 ## I. Datasets
 ### Public Image Dataset
@@ -94,9 +93,17 @@ I tried MLP model with 3 different sizes of the hidden layer.
 The model has only one hidden layer.
 
 ## IV. Analysis
-> Note: "pre.", "rec.", and "acc." are abbreviations of "precision", "recall", and "accuracy", and "F1" means "F1-score".
+*Note: "pre.", "rec.", and "acc." are abbreviations of "precision", "recall", and "accuracy", and "F1" means "F1-score".*
 
 ### 1. Satellite Image Classification
+<div class="label-name">
+
+| Label | 0 | 1 | 2 | 3 |
+| --- | --- | --- | --- | --- |
+| Name | Cloudy Area | Desert Area | Green Area | Water Area |
+
+</div>
+
 #### Testing Performance of KNN
 ##### With Test Size: 0.2
 <div class="row">
@@ -281,6 +288,14 @@ Thus, a high performance and stable MLP model can be constructed with `hidden_la
 ---
 
 ### 2. Stellar Classification
+<div class="label-name">
+
+| Label | 0 | 1 | 2 |
+| --- | --- | --- | --- |
+| Name | Galaxy | Star | Quasar |
+
+</div>
+
 #### Testing Performance of KNN
 ##### With Test Size: 0.2
 <div class="row">
@@ -317,7 +332,7 @@ Thus, a high performance and stable MLP model can be constructed with `hidden_la
 </div>
 
 ##### Other Observation
-Although I have done undersampling on the major classes to make each class has equal size, the precision and recall on each class is still related to the original class number. The more the number of that class originally had, the better the precision and recall it had.
+It had high f1-score on class 0, then middle f1-score on class 1, and finally low f1-score on class 2. This is positively related to the original number of data in that class.
 
 #### Testing Performance of Random Forest
 ##### With Test Size: 0.2
@@ -439,6 +454,10 @@ On this dataset, it's obvious that each model had worse performance on testing s
 #### ii. Classifier Comparison
 On this dataset, comparing the best model of each type, MLP > SVM > RF > KNN. 
 
+Although I have done undersampling on the major classes to make each class has equal size, the precision and recall on each class is still related to the original class number, and this phenomenon can be seen on each model. Thus, this is probably related to the sampled data instead of the model selection.
+
+Take a look at MLP, SVM, and RF. They all have high precision and recall except on class 3, so I think they can be tuned further or trained with more data with class 3 to become more robust.
+
 #### iii. Hyper-parameter Comparison
 For KNN, as the $K$ increased, the performance decreased. However, the effect was not obvious.
 
@@ -454,6 +473,14 @@ After categorical features were encoded with one-hot encoding, there became a la
 ---
 
 ### 3. BBC News Classification
+<div class="label-name">
+
+| Label | 0 | 1 | 2 | 3 |
+| --- | --- | --- | --- | --- |
+| Name | Business | Entertainment & Art | Science & Environment | Technology |
+
+</div>
+
 #### Testing Performance of KNN
 ##### With Test Size: 0.2
 <div class="row">
@@ -490,6 +517,9 @@ After categorical features were encoded with one-hot encoding, there became a la
 | 3 | 0.75 | 0.62 | 0.68 |
 
 </div>
+
+##### Other Observation
+With test size being 0.2, on average, it had low precsion on class 0, and high recall on class 2, while with test size being 0.3, on average, it had both low precsion and recall on class 3.
 
 #### Testing Performance of Random Forest
 ##### With Test Size: 0.2
@@ -528,6 +558,9 @@ After categorical features were encoded with one-hot encoding, there became a la
 
 </div>
 
+##### Other Observation
+With test size being 0.2, on average, it had low precsion on class 1 and class 3, and low recall on class 0 and class 3, while with test size being 0.3, on average, it only had high precsion on class 1 and high recall on class 1 and class 2.
+
 #### Testing Performance of SVM
 ##### With Test Size: 0.2
 <div class="row">
@@ -564,6 +597,9 @@ After categorical features were encoded with one-hot encoding, there became a la
 | 3 | 0.58 | 0.74 | 0.65 |
 
 </div>
+
+##### Other Observation
+With test size being 0.2, on average, it had low precision on class 3 and low recall on class 0, while with test size being 0.3, on average, it had low precision on class 2 and class 3 and low recall on class 0 and class 3.
 
 #### Testing Performance of MLP
 ##### With Test Size: 0.2
@@ -602,11 +638,16 @@ After categorical features were encoded with one-hot encoding, there became a la
 
 </div>
 
+##### Other Observation
+With test size being 0.2, on average, it had low precision on class 3 and low recall on class 0 and class 3, while with test size being 0.3, on average, it had low precision on class 3 and low recall on class 0.
+
 #### i. Test Size Comparison
 KNN and MLP have higher accuracy on larger testing set, while random forest and SVM have lower accuracy on larger testing set. This means the former models need less information when training, whereas the latter models need more.
 
 #### ii. Classifier Comparison
-The performance of each model: MLP ~ SVM > KNN ~ RF.
+The performance of each model: MLP ~ SVM > KNN ~ RF. All of them were good at classifying class 1 (entertainment & arts) and class 2 (science & environment), since they all had relative high f1-score on these classes.
+
+Take a look at MLP and SVM, they both proned to predict news of other categories as technology news, and predict business news as news of other categories. Perhaps it's because those news contained technological terms and business news often related to other topics.
 
 #### iii. Hyper-parameter Comparison
 For KNN, the relation between $K$ and performance was not consistent with different test size. In my opinion, it's due to the number of the whole dataset is small. Therefore, these 2 datasets have different groups of data when randomly sampled. Consequently, the optimal $K$ for good performance was different.
@@ -621,7 +662,7 @@ For MLP, with a larger training set (smaller testing set), its accuracy dropped 
 ##### Are the Results What I Expected?
 - I guessed the setup with the larger testing set would perform worse; however, it depended.
 - Initially, I guessed MLP would perform better on image data; however, in my experiments, it did better job on other type of data.
-- I didn't expect KNN to have high accuracy, but the outcome showed that It could have accuracy up to $70\%$ and even higher.
+- I didn't expect KNN to have high accuracy, but the outcome showed that It could have accuracy at least $70\%$ and even higher.
 
 ##### Factors Affecting the Performance
 - How well the data are processed
@@ -630,31 +671,40 @@ For MLP, with a larger training set (smaller testing set), its accuracy dropped 
 - Hyper-parameter of each model
 
 ##### Further Experiments if Time Available
-- I will try larger testing sets, and try more parameter combinations.
-- Also, I may try other type of data, such as audio or video.
+- Try larger testing sets.
+- Try more parameter combinations.
+- Try other methods to balance data.
 
 ##### What I have learned from the Project
-- Skill of dynamic web scraping
-- Preprocessing of image data
-- Preprocessing of text data
+- Skills of dynamic web scraping
+- Preprocessing of image and text data
 - Undersampling for imbalanced data
-
-## VI. Appendix
+- Data analysis with the training / testing outcome
 
 <style>
+h1, h2, h3, h4, h5 { margin-top: 0 !important; }
 h1 { font-size: 22px !important; }
 h2 { font-size: 20px !important; }
 h3 { font-size: 18px !important; }
 h4 { font-size: 16px !important; }
-h5, h6 { font-size: 14px !important; }
+h5 { font-size: 14px !important; }
 p, li { font-size: 14px; }
+table { font-size: 14px; }
 
 .row {
     display: flex;
     justify-content: space-around;
-    font-size: 14px;
 }
 .row table {
     width: auto !important;
+}
+
+.label-name table tr th {
+    font-weight: normal;
+}
+.label-name table tr th:nth-child(1),
+.label-name table tr td:nth-child(1)
+{
+    font-weight: bold;
 }
 </style>
