@@ -8,6 +8,7 @@ Author: 0816066 官澔恩
 - III. Algorithms
 - IV. Analysis
 - V. Discussion
+- VI. Appendix
 
 ## I. Datasets
 ### Public Image Dataset
@@ -684,6 +685,590 @@ For MLP, with a larger training set (smaller testing set), its accuracy dropped 
 - Preprocessing of image and text data
 - Undersampling for imbalanced data
 - Data analysis with the training / testing outcome
+
+<div style="margin-top: 2rem;"></div>
+
+## VI. Appendix
+### BBCScraper:
+```python
+import os
+import time
+import requests
+from bs4 import Tag, BeautifulSoup as bs
+from requests.api import options
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.utils import ChromeType
+
+base_url = "https://www.bbc.com/news"
+
+class BBCScraper:
+    def __init__(self, url: str) -> None:
+        page = requests.get(url)
+        soup = bs(page.content, "html.parser")
+        self.__body = soup.find("article")
+        self.title = self.__get_title()
+        self.content = self.__get_content()
+
+    def __get_title(self) -> str:
+        assert isinstance(self.__body, Tag)
+        title = self.__body.find(id="main-heading")
+        assert isinstance(title, Tag)
+        return title.text
+
+    def __get_content(self) -> str:
+        assert isinstance(self.__body, Tag)
+        text_blocks = self.__body.select("div[data-component='text-block']")
+        return ' '.join([b.text for b in text_blocks])
+
+def get_news(categories: list,
+             news_per_category: int,
+             driver: webdriver.Chrome) -> dict:
+    news = {}
+
+    for category in categories:
+        print(f"{ category }:")
+        news[category] = []
+        news_count = 0
+
+        driver.get(f"{ base_url }/{ category.replace('-', '_and_') }")
+        index_page = driver.find_element(by=By.ID, value="index-page")
+        links = index_page.find_elements(by=By.TAG_NAME, value="a")
+        for link in links:
+            url = link.get_attribute("href")
+            # this is a video news
+            try:
+                link.find_element(by=By.TAG_NAME, value="span")
+            # this is a regular news
+            except NoSuchElementException:
+                if url.startswith(f"{ base_url }/{ category }-") and url not in news[category]:
+                    news[category].append(url)
+                    news_count += 1
+
+        print(f"Total { news_count } articles were collected from #index-page.")
+
+        time.sleep(1)
+
+        # close the pop-up modal if it appears
+        try:
+            close_btn = driver.find_element(by=By.CLASS_NAME, value="tp-close.tp-active")
+            close_btn.click()
+        except NoSuchElementException:
+            pass
+
+        while news_count < news_per_category:
+            ol = driver.find_element(by=By.TAG_NAME, value="ol")
+            lis = ol.find_elements(by=By.CSS_SELECTOR, value="ol > li")
+            for li in lis:
+                article = li.find_element(by=By.TAG_NAME, value="article")
+                link = article.find_element(by=By.TAG_NAME, value="a")
+                url = link.get_attribute("href")
+                # this is a video news
+                try:
+                    article.find_element(by=By.CLASS_NAME, value="smp-embed")
+                    print(f"Skipped { url }.")
+                # this is a regular news
+                except NoSuchElementException:
+                    if url.startswith(f"{ base_url }/{ category }-") and url not in news[category]:
+                        news[category].append(url)
+                        news_count += 1
+                    if news_count == news_per_category:
+                        break
+
+            print(f"Total { news_count } articles has been collected so far.")
+
+            next_btn = driver.find_element(by=By.CLASS_NAME, value="qa-pagination-next-page")
+            next_btn.click()
+            time.sleep(1)
+
+        time.sleep(0.5)
+
+    return news
+
+if __name__ == "__main__":
+    options = Options()
+    options.add_argument("headless")
+    service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+    driver = webdriver.Chrome(service=service, options=options)
+
+    categories = [
+        "business",
+        "entertainment-arts",
+        "science-environment",
+        "technology"
+    ]
+    news = get_news(categories, 50, driver)
+
+    driver.close()
+
+    for category, urls in news.items():
+        if not os.path.exists(category):
+            os.mkdir(category)
+
+        for idx, url in enumerate(urls):
+            scraper = BBCScraper(url)
+            title = scraper.title
+            content = scraper.content
+
+            with open(f"{ category }/{ idx }.txt", "w") as file:
+                file.write(title)
+                file.write('\n')
+                file.write(content)
+                print(f"{ category }/{ idx }.txt was created.")
+
+            time.sleep(0.5)
+```
+
+### Dataset 1:
+```python
+import os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from IPython.display import display, Markdown
+
+from skimage.io import imread
+from skimage.transform import resize
+from sklearn.model_selection import train_test_split, cross_validate, ParameterGrid
+from sklearn.metrics import confusion_matrix, classification_report
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
+
+# ------------------ #
+# Data Preprocessing #
+# ------------------ #
+
+data_dir = '../input/satellite-image-classification/data'
+cats = ['cloudy', 'desert', 'green_area', 'water']
+img_shape = (64, 64)
+test_sizes = [0.2, 0.3]
+
+data = []
+labels = []
+
+# read and resize each image
+for cat_id, cat in enumerate(cats):
+    cat_dir = f'{ data_dir }/{ cat }'
+    for img_name in os.listdir(cat_dir):
+        img = imread(f'{ cat_dir }/{ img_name }')
+        img = resize(img, img_shape)
+        data.append(img)
+        labels.append(cat_id)
+
+data = np.array(data)
+labels = np.array(labels)
+
+# display some images
+fig, axes = plt.subplots(1, 5)
+for idx, sample in enumerate(data[:5]):
+    axes[idx].imshow(sample)
+fig.tight_layout()
+fig.show()
+
+# flatten the array representation of each image
+data = data.reshape((data.shape[0], np.prod(img_shape) * 3))
+
+# split data into training set and testing set based on the proportion of testing set
+datasets = [ train_test_split(data, labels, test_size=test_size)
+             for test_size in test_sizes ]
+
+# ------ #
+# Models #
+# ------ #
+
+# make a specified model with desired parameters
+def get_model(model_type, params):
+    if model_type == 'knn':
+        return KNeighborsClassifier(**params)
+    elif model_type == 'rf':
+        return RandomForestClassifier(criterion='gini', **params)
+    elif model_type == 'svm':
+        return SVC(kernel='rbf', **params)
+    elif model_type == 'mlp':
+        return MLPClassifier(**params)
+    else:
+        return None
+
+# -------------------- #
+# Validation & Results #
+# -------------------- #
+
+# display a confusion matrix and the classification report
+def show_performance(y_true, y_pred):
+    c_matrix = confusion_matrix(y_true, y_pred)
+    c_table = pd.DataFrame(c_matrix)
+    c_table.columns.name = 'truth\pred'
+    display(c_table)
+    
+    report = classification_report(y_true, y_pred)
+    print(report)
+
+def show_cross_validate_report(res):
+    report = pd.DataFrame({
+        'fit_time': res['fit_time'],
+        'score_time': res['score_time'],
+        'test_score': res['test_score'],
+    })
+    display(report)
+
+# train a model with 5-fold cross validation and validate the best model with the testing set
+def train_model(model_type, param_grid, datasets):
+    for test_size, dataset in zip(test_sizes, datasets):
+        display(Markdown(f'### Test size: { test_size }'))
+        X_train, X_test, y_train, y_test = dataset
+
+        for params in param_grid:
+            display(Markdown(f'#### { params }'))
+            model = get_model(model_type, params)
+            res = cross_validate(model, X_train, y_train, return_estimator=True)
+
+            display(Markdown('#### Training Performance:'))
+            show_cross_validate_report(res)
+
+            best_model = res['estimator'][res['test_score'].argmax()]
+            y_pred = best_model.predict(X_test)
+
+            display(Markdown('#### Testing Performance:'))
+            show_performance(y_test, y_pred)
+
+# KNN
+param_grid = ParameterGrid({
+    'n_neighbors': [5, 10, 15]
+})
+train_model('knn', param_grid, datasets)
+
+# Random Forest
+param_grid = ParameterGrid({
+    'min_samples_leaf': [1, 5, 10]
+})
+train_model('rf', param_grid, datasets)
+
+# SVM
+param_grid = ParameterGrid({
+    'C': [1, 5, 10]
+})
+train_model('svm', param_grid, datasets)
+
+# MLP
+param_grid = ParameterGrid({
+    'hidden_layer_sizes': [256, 512, 1024]
+})
+train_model('mlp', param_grid, datasets)
+```
+
+### Dataset 2:
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from IPython.display import display, Markdown
+
+from imblearn.under_sampling import RandomUnderSampler
+
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split, cross_validate, ParameterGrid
+from sklearn.metrics import confusion_matrix, classification_report
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
+
+# ------------------ #
+# Data Preprocessing #
+# ------------------ #
+
+data_path = '../input/stellar-classification-dataset-sdss17/star_classification.csv'
+data = pd.read_csv(data_path)
+data
+
+print(data['class'].value_counts())
+# labeling encode the feature 'class'
+encoder = LabelEncoder()
+label_encoded_classes = encoder.fit_transform(data['class'].values)
+data['class'] = label_encoded_classes
+
+corr = data.corr()
+corr_class = corr['class'].sort_values()
+threshold = (corr_class > 0.02) | (corr_class < -0.02)
+print(pd.DataFrame({'corr_coef': corr_class, 'meet_thres': threshold}))
+
+to_drops = threshold.index[~threshold].tolist()
+to_drops.append('class')
+
+'''
+`alpha`, `spec_obj_ID`, `plate`, `z`, `MJD`, `delta`, `i`, and `rerun_ID`
+has little relation with the target feature `class`.
+Therefore, I'll drop them.
+'''
+
+# drop unrelated features and the target feature
+data_X = data.drop(columns=to_drops)
+data_y = data['class']
+
+data_X.info()
+
+'''
+`run_ID`, `cam_col`, `field_ID`, and `fiber_ID` is categorical.
+They have to be one-hot encoded.
+'''
+
+# transform each categorical attributes into one-hot encoded ones
+cat_attrs = ['run_ID', 'cam_col', 'field_ID', 'fiber_ID']
+for cat_attr in cat_attrs:
+    one_hot = pd.get_dummies(data_X[cat_attr]).add_prefix(f'{ cat_attr }_')
+    data_X = data_X.drop(columns=cat_attr)
+    data_X = data_X.join(one_hot)
+
+data_X = data_X.values
+print(f'Number of features becomes { data_X.shape[1] }.')
+
+test_sizes = [0.2, 0.3]
+datasets = [ train_test_split(data_X, data_y.values, test_size=test_size)
+             for test_size in test_sizes ]
+
+rus = RandomUnderSampler()
+pca = PCA(n_components=100)
+scaler = MinMaxScaler()
+
+for idx, dataset in enumerate(datasets):
+    X_train, X_test, y_train, y_test = dataset
+    
+    X_train, y_train = rus.fit_resample(X_train, y_train)
+    print(f'Number of each class: { np.unique(y_train, return_counts=True)[0] }')
+    
+    X_train = pca.fit_transform(X_train)
+    X_test = pca.transform(X_test)
+    
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+    
+    datasets[idx] = (X_train, X_test, y_train, y_test)
+
+# ------ #
+# Models #
+# ------ #
+
+# make a specified model with desired parameters
+def get_model(model_type, params):
+    if model_type == 'knn':
+        return KNeighborsClassifier(**params)
+    elif model_type == 'rf':
+        return RandomForestClassifier(criterion='gini', **params)
+    elif model_type == 'svm':
+        return SVC(kernel='rbf', **params)
+    elif model_type == 'mlp':
+        return MLPClassifier(**params)
+    else:
+        return None
+
+# -------------------- #
+# Validation & Results #
+# -------------------- #
+
+# display a confusion matrix and the classification report
+def show_performance(y_true, y_pred):
+    c_matrix = confusion_matrix(y_true, y_pred)
+    c_table = pd.DataFrame(c_matrix)
+    c_table.columns.name = 'truth\pred'
+    display(c_table)
+    
+    report = classification_report(y_true, y_pred)
+    print(report)
+
+def show_cross_validate_report(res):
+    report = pd.DataFrame({
+        'fit_time': res['fit_time'],
+        'score_time': res['score_time'],
+        'test_score': res['test_score'],
+    })
+    display(report)
+
+# train a model with 5-fold cross validation and validate the best model with the testing set
+def train_model(model_type, param_grid, datasets):
+    for test_size, dataset in zip(test_sizes, datasets):
+        display(Markdown(f'### Test size: { test_size }'))
+        X_train, X_test, y_train, y_test = dataset
+
+        for params in param_grid:
+            display(Markdown(f'#### { params }'))
+            model = get_model(model_type, params)
+            res = cross_validate(model, X_train, y_train, return_estimator=True)
+
+            display(Markdown('#### Training Performance:'))
+            show_cross_validate_report(res)
+
+            best_model = res['estimator'][res['test_score'].argmax()]
+            y_pred = best_model.predict(X_test)
+
+            display(Markdown('#### Testing Performance:'))
+            show_performance(y_test, y_pred)
+
+# KNN
+param_grid = ParameterGrid({
+    'n_neighbors': [5, 10, 15]
+})
+train_model('knn', param_grid, datasets)
+
+# Random Forest
+param_grid = ParameterGrid({
+    'min_samples_leaf': [1, 5, 10]
+})
+train_model('rf', param_grid, datasets)
+
+# SVM
+param_grid = ParameterGrid({
+    'C': [1, 5, 10]
+})
+train_model('svm', param_grid, datasets)
+
+# MLP
+param_grid = ParameterGrid({
+    'hidden_layer_sizes': [256, 512, 1024]
+})
+train_model('mlp', param_grid, datasets)
+```
+
+### Dataset 3:
+```python
+import os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from IPython.display import display, Markdown
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split, cross_validate, ParameterGrid
+from sklearn.metrics import confusion_matrix, classification_report
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
+
+# ------------------ #
+# Data Preprocessing #
+# ------------------ #
+
+data_dir = '../input/collection-of-bbc-news'
+cats = ['business', 'entertainment-arts', 'science-environment', 'technology']
+
+data = []
+labels = []
+
+for cat_idx, cat in enumerate(cats):
+    cat_dir = f'{ data_dir }/{ cat }'
+    for file_name in os.listdir(cat_dir):
+        with open(f'{ cat_dir }/{ file_name }') as file:
+            article = file.read()
+            data.append(article)
+            labels.append(cat_idx)
+
+test_sizes = [0.2, 0.3]
+
+# split data into training set and testing set based on the proportion of testing set
+datasets = [ train_test_split(data, np.array(labels), test_size=test_size)
+             for test_size in test_sizes ]
+
+vectorizer = TfidfVectorizer(stop_words='english')
+
+for idx, dataset in enumerate(datasets):
+    X_train, X_test, y_train, y_test = dataset
+    X_train = vectorizer.fit_transform(X_train).toarray()
+    X_test = vectorizer.transform(X_test).toarray()
+    datasets[idx] = X_train, X_test, y_train, y_test
+
+# ------ #
+# Models #
+# ------ #
+
+# make a specified model with desired parameters
+def get_model(model_type, params):
+    if model_type == 'knn':
+        return KNeighborsClassifier(**params)
+    elif model_type == 'rf':
+        return RandomForestClassifier(criterion='gini', **params)
+    elif model_type == 'svm':
+        return SVC(kernel='rbf', **params)
+    elif model_type == 'mlp':
+        return MLPClassifier(**params)
+    else:
+        return None
+
+# -------------------- #
+# Validation & Results #
+# -------------------- #
+
+# display a confusion matrix and the classification report
+def show_performance(y_true, y_pred):
+    c_matrix = confusion_matrix(y_true, y_pred)
+    c_table = pd.DataFrame(c_matrix)
+    c_table.columns.name = 'truth\pred'
+    display(c_table)
+    
+    report = classification_report(y_true, y_pred)
+    print(report)
+
+def show_cross_validate_report(res):
+    report = pd.DataFrame({
+        'fit_time': res['fit_time'],
+        'score_time': res['score_time'],
+        'test_score': res['test_score'],
+    })
+    display(report)
+
+# train a model with 5-fold cross validation and validate the best model with the testing set
+def train_model(model_type, param_grid, datasets):
+    for test_size, dataset in zip(test_sizes, datasets):
+        display(Markdown(f'### Test size: { test_size }'))
+        X_train, X_test, y_train, y_test = dataset
+
+        for params in param_grid:
+            display(Markdown(f'#### { params }'))
+            model = get_model(model_type, params)
+            res = cross_validate(model, X_train, y_train, return_estimator=True)
+
+            display(Markdown('#### Training Performance:'))
+            show_cross_validate_report(res)
+
+            best_model = res['estimator'][res['test_score'].argmax()]
+            y_pred = best_model.predict(X_test)
+
+            display(Markdown('#### Testing Performance:'))
+            show_performance(y_test, y_pred)
+
+# KNN
+param_grid = ParameterGrid({
+    'n_neighbors': [5, 10, 15]
+})
+train_model('knn', param_grid, datasets)
+
+# Random Forest
+param_grid = ParameterGrid({
+    'min_samples_leaf': [1, 5, 10]
+})
+train_model('rf', param_grid, datasets)
+
+# SVM
+param_grid = ParameterGrid({
+    'C': [1, 5, 10]
+})
+train_model('svm', param_grid, datasets)
+
+# MLP
+param_grid = ParameterGrid({
+    'hidden_layer_sizes': [256, 512, 1024]
+})
+train_model('mlp', param_grid, datasets)
+```
 
 <style>
 h1, h2, h3, h4, h5 { margin-top: 0 !important; }
